@@ -13,12 +13,11 @@ import (
 )
 
 var (
-	client *redis.Client
-)
-
-var (
 	key = "key"
 	val = "value"
+)
+var (
+	client *redis.Client
 )
 
 func TestMain(m *testing.M) {
@@ -34,13 +33,18 @@ func TestMain(m *testing.M) {
 }
 
 func TestSet(t *testing.T) {
+	key = "key"
+	b := Band{
+		Name: "The Band",
+	}
+
 	exp := time.Duration(0)
 
 	mock := redismock.NewNiceMock(client)
-	mock.On("Set", key, val, exp).Return(redis.NewStatusResult("", nil))
+	mock.On("Set", key, b, exp).Return(redis.NewStatusResult("", nil))
 
 	r := NewRedisRepository(mock)
-	err := r.Set(key, val, exp)
+	err := r.Set(key, b, exp)
 	assert.NoError(t, err)
 }
 

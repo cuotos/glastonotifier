@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSand(t *testing.T) {
@@ -15,5 +16,6 @@ func TestSand(t *testing.T) {
 	})
 	r := NewRedisRepository(client)
 
-	r.Set("band1", b, time.Duration(time.Minute))
+	err := r.Set("band1", b, time.Duration(time.Minute))
+	assert.NoError(t, err)
 }

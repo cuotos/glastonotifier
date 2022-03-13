@@ -3,6 +3,9 @@ package main
 import (
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/go-redis/redis"
 )
 
 type BandI interface {
@@ -18,7 +21,8 @@ type Band struct {
 type State int
 
 const (
-	Rumoured State = iota
+	UnknownState State = iota
+	Rumoured
 	StronglyRumoured
 	TBC
 	Confirmed
@@ -26,6 +30,8 @@ const (
 
 func (s State) String() string {
 	switch s {
+	case UnknownState:
+		return "Unknown State"
 	case Rumoured:
 		return "Rumoured"
 	case StronglyRumoured:
@@ -64,4 +70,27 @@ func extractBandFromInputString(input string) Band {
 		State: state,
 		Stage: stage,
 	}
+}
+
+type BandRepository interface {
+	Set(key string, value interface{}, exp time.Duration) error
+	Get(key string) (string, error)
+}
+
+type repository struct {
+	Client redis.Cmdable
+}
+
+func NewRedisRepository(Client redis.Cmdable) BandRepository {
+	return &repository{Client}
+}
+
+func (r *repository) Set(key string, value interface{}, exp time.Duration) error {
+
+	return r.Client.Set(key, value, exp).Err()
+}
+
+func (r *repository) Get(key string) (string, error) {
+	get := r.Client.Get(key)
+	return get.Result()
 }
