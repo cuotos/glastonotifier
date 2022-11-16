@@ -5,20 +5,21 @@ import (
 	"strings"
 )
 
-type BandI interface {
+type BandStorer interface {
 	Store() error
 }
 
 type Band struct {
-	Name  string
-	State State
-	Stage string
+	Name  string `json:"name"`
+	State State  `json:"state"`
+	Stage string `json:"stage"`
 }
 
 type State int
 
 const (
-	Rumoured State = iota
+	UnknownState State = iota
+	Rumoured
 	StronglyRumoured
 	TBC
 	Confirmed
@@ -26,6 +27,8 @@ const (
 
 func (s State) String() string {
 	switch s {
+	case UnknownState:
+		return "Unknown State"
 	case Rumoured:
 		return "Rumoured"
 	case StronglyRumoured:
