@@ -1,21 +1,19 @@
 package main
 
 import (
+	"encoding/json"
+	"os"
 	"testing"
-	"time"
-
-	"github.com/go-redis/redis"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestSand(t *testing.T) {
-	b := Band{Name: "The Band", Stage: "A Stage", State: StronglyRumoured}
+	b := Band{
+		Name:  "maddog",
+		State: UnknownState,
+		Stage: "unknown",
+	}
 
-	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
-	})
-	r := NewRedisRepository(client)
+	e := json.NewEncoder(os.Stdout)
+	e.Encode(b)
 
-	err := r.Set("band1", b, time.Duration(time.Minute))
-	assert.NoError(t, err)
 }
